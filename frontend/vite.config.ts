@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [react()],
   server: {
     host: '0.0.0.0',
-    port: 8081,
+    port: 8088,
   },
   publicDir: 'assets'
 })
