@@ -2,6 +2,8 @@
 
 Lilypad Decentralised Compute Network (DCN) is a decentralized compute network that enables the execution of arbitrary Docker containers on a network of volunteer/incentivized nodes. It provides a platform where clients can pay a small amount of tokens to run jobs, such as Stable Diffusion XL tasks. The network utilizes EVM-based smart contracts to manage job state and payment, while leveraging [Bacalhau](https://www.bacalhau.org/) and [Docker](https://docker.com) for running jobs.
 
+Lilypad DCN - this code - is the smart contracts and infrastructure side of Lilypad. "Lilypad" is the software that drives it.
+
 Lilypad is a powerful, flexible and composable system that can be used to run a wide variety of compute tasks. It is designed to be a general-purpose compute network that can be used to run any kind of compute task, from simple scripts to complex machine learning models.
 
 ## table of contents
