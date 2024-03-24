@@ -1,4 +1,4 @@
-FROM mhart/alpine-node:16 AS build-env
+FROM node:20-alpine AS build-env
 
 RUN echo "installing apk packages" && \
   apk update && \
@@ -24,6 +24,6 @@ RUN yarn build
 
 # frontend deploy
 FROM nginx:alpine as deploy-frontend
-LABEL maintainer="kaiyadavenport@gmail.com"
+LABEL maintainer="wings@lilypad.tech"
 COPY ./nginx.conf /etc/nginx/nginx.conf
 COPY --from=build-env /app/dist /www
