@@ -26,6 +26,8 @@ services:
       - NOXY_GRADIO_HOST=gradio
       - NOXY_GRADIO_PORT=7860
       - NOXY_GRADIO_WS=1
+    networks:
+      - lilysaas
   postgres:
     image: postgres:12.13-alpine
     restart: always
@@ -36,17 +38,22 @@ services:
     environment:
       - POSTGRES_DB=postgres
       - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=${POSTGRES_ADMIN_PASSWORD-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_ADMIN_PASSWORD:-postgres}
+    networks:
+      - lilysaas
   keycloak:
     image: quay.io/modeldynamics/keycloak:15.0.2-helix
     restart: always
+    ports:
+      - 8085:8080
+      - 8443:8443
     environment:
       - KEYCLOAK_USER=admin
-      - KEYCLOAK_PASSWORD=${KEYCLOAK_ADMIN_PASSWORD-oh-hallo-insecure-password}
+      - KEYCLOAK_PASSWORD=${KEYCLOAK_ADMIN_PASSWORD:-oh-hallo-insecure-password}
       - KC_PROXY=edge
       - DB_VENDOR=h2
       - KEYCLOAK_IMPORT=/imported/realm.json -Dkeycloak.profile.feature.upload_scripts=enabled -Dkeycloak.profile=preview
-      - KEYCLOAK_FRONTEND_URL=${KEYCLOAK_FRONTEND_URL:-http://localhost/auth/}
+      - KEYCLOAK_FRONTEND_URL=${KEYCLOAK_FRONTEND_URL:-https://app.lilypad.tech/auth/}
     volumes:
       - ./realm.json:/imported/realm.json
       - ${KEYCLOAK_DATA:-lilysaas-keycloak-db}:/opt/jboss/keycloak/standalone/data
@@ -56,28 +63,34 @@ services:
       timeout: 10s
       retries: 3
       start_period: 5s
+    networks:
+      - lilysaas
   api:
     build:
       context: .
       dockerfile: Dockerfile.api
     restart: always
+    ports:
+      - 8084:80
     environment:
       - LOG_LEVEL=debug
-      - APP_URL=${SERVER_URL:-http://localhost}
+      - APP_URL=${SERVER_URL:-https://app.lilypad.tech}
       - POSTGRES_HOST=postgres
       - POSTGRES_DATABASE=postgres
       - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=${POSTGRES_ADMIN_PASSWORD-postgres}
-      - SERVER_URL=${SERVER_URL:-http://localhost}
+      - POSTGRES_PASSWORD=${POSTGRES_ADMIN_PASSWORD:-postgres}
+      - SERVER_URL=${SERVER_URL:-https://app.lilypad.tech}
       - KEYCLOAK_URL=http://keycloak:8080/auth
-      - WEB3_RPC_URL=ws://172.17.0.1:8546
+      - WEB3_RPC_URL=ws://testnet.lilypad.tech:8546
       # this is an insecure (development) private key - will need to be changed in .env file for production
-      - WEB3_PRIVATE_KEY=${WEB3_PRIVATE_KEY-0x8b3a350cf5c34c9194ca85829a2df0ec3153be0318b5e2d3348e872092edffba}
-      - SERVICE_SOLVER=${SERVICE_SOLVER-0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC}
-      - SERVICE_MEDIATORS=${SERVICE_MEDIATORS-0x90F79bf6EB2c4f870365E785982E1f101E93b906}
-      - WEB3_CONTROLLER_ADDRESS=${WEB3_CONTROLLER_ADDRESS-0x59b670e9fA9D0A427751Af201D676719a970857b}
+      - WEB3_PRIVATE_KEY=${WEB3_PRIVATE_KEY:-0x8b3a350cf5c34c9194ca85829a2df0ec3153be0318b5e2d3348e872092edffba}
+      - SERVICE_SOLVER=${SERVICE_SOLVER:-0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC}
+      - SERVICE_MEDIATORS=${SERVICE_MEDIATORS:-0x90F79bf6EB2c4f870365E785982E1f101E93b906}
+      - WEB3_CONTROLLER_ADDRESS=${WEB3_CONTROLLER_ADDRESS:-0x59b670e9fA9D0A427751Af201D676719a970857b}
       # this is an insecure development key - do not use in production!
-      - KEYCLOAK_TOKEN=${KEYCLOAK_TOKEN-5ca0fc03-d625-456e-bca7-8e732309165f}
+      - KEYCLOAK_TOKEN=${KEYCLOAK_TOKEN:-5ca0fc03-d625-456e-bca7-8e732309165f}
+    networks:
+      - lilysaas
     entrypoint: ${API_ENTRYPOINT:-go run . saas-api}
     volumes:
       - ./go.mod:/app/go.mod
@@ -95,7 +108,9 @@ services:
     # TODO: in production, maybre remove --reload?
     entrypoint: uvicorn main:app --reload --host 0.0.0.0 --port 7860
     environment:
-      - SOLVER_URL=${SOLVER_URL-http://172.17.0.1:8080}
+      - SOLVER_URL=${SOLVER_URL:-http://172.17.0.1:8080}
+    networks:
+      - lilysaas
     # uvicorn will auto-reload, or you can docker-compose restart gradio when
     # changing the code
     # (you'll still need to docker-compose build gradio when changing the
@@ -113,7 +128,9 @@ services:
       target: ${FRONTEND_TARGET:-build-env}
     restart: always
     # let it be defined but not empty (no colon below), since an empty entrypoint means use the one from the Dockerfile
-    entrypoint: ${FRONTEND_ENTRYPOINT-yarn run dev}
+    entrypoint: ${FRONTEND_ENTRYPOINT:-yarn run dev}
+    networks:
+      - lilysaas
     volumes:
       - ./frontend/package.json:/app/package.json
       - ./frontend/src:/app/src
@@ -121,6 +138,10 @@ services:
       - ./frontend/index.html:/app/index.html
       - ./frontend/tsconfig.json:/app/tsconfig.json
       - ./frontend/vite.config.ts:/app/vite.config.ts
+
+networks:
+  lilysaas:
+    driver: bridge
 
 volumes:
   lilysaas-keycloak-db:
