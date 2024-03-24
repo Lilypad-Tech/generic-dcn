@@ -47,14 +47,15 @@ const Dashboard: FC = () => {
               Stable Diffusion XL
             </Typography>
           </Grid>
-          <Grid item xs={12} sm={4} sx={{backgroundColor: selectedModule == "mistral7b" ? "lightblue" : "" }}>
+          {/* Disabled while we improve stability of the containers that power it */}
+          {/* <Grid item xs={12} sm={4} sx={{backgroundColor: selectedModule == "mistral7b" ? "lightblue" : "" }}>
             <Button style={{marginLeft: "auto", marginRight: "auto", display: "block", width:"320px"}} onClick={() => setSelectedModule("mistral7b")}>
               <img src="/img/mistral7b.jpeg" alt="Mistral-7B" style={{width:"250px"}} />
             </Button>
             <Typography variant="subtitle1" align="center">
               Mistral-7B-Instruct
             </Typography>
-          </Grid>
+          </Grid> */}
           <Grid item xs={12} sm={4} sx={{backgroundColor: selectedModule == "cowsay" ? "lightblue" : "" }}>
             <Button style={{marginLeft: "auto", marginRight: "auto", display: "block", width:"320px"}} onClick={() => setSelectedModule("cowsay")}>
               <img src="/img/cowsay.png" alt="Cowsay" style={{width:"250px"}} />
