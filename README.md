@@ -109,15 +109,15 @@ These steps only need to be done once.
 
 #### install bacalhau
 
-We are currently pinned to bacalhau v1.0.3 - to install this version run the following commands:
+We are currently using and testing Lilypad with Bacalhau v1.2.3 - to install this version run the following commands:
 
 ```bash
-wget https://github.com/bacalhau-project/bacalhau/releases/download/v1.0.3/bacalhau_v1.0.3_linux_amd64.tar.gz
+wget https://github.com/bacalhau-project/bacalhau/releases/download/v1.2.3/bacalhau_v1.2.3_linux_amd64.tar.gz
 # Extract the downloaded archive and move the `bacalhau` binary to `/usr/local/bin`
-tar xfv bacalhau_v1.0.3_linux_amd64.tar.gz
+tar xfv bacalhau_v1.2.3_linux_amd64.tar.gz
 mv bacalhau /usr/local/bin
 # Set the IPFS data path by exporting the `BACALHAU_SERVE_IPFS_PATH` variable to your desired location
-export BACALHAU_SERVE_IPFS_PATH=/tmp/gdcn/data/ipfs
+export BACALHAU_SERVE_IPFS_PATH=/tmp/lilypad/data/ipfs
 ```
 
 #### clone faucet repo
