@@ -11,11 +11,9 @@ app = FastAPI()
 
 def update_interface(advanced_options):
     if advanced_options:
-        print("DEBUG - Advanced options enabled")
-        return {additional_settings_textbox: {"visible": True}}
+        return {additional_settings_textbox: gr.Textbox(visible=True)}
     else:
-        print("DEBUG: Advanced options disabled")
-        return {"visible": False}
+        return {additional_settings_textbox: gr.Textbox(visible=False)}
 
 def run(module, inputs, request: gr.Request):
     if not request.query_params.get("userApiToken", "").startswith("lp-"):
@@ -124,7 +122,8 @@ with gr.Blocks() as sdxl_app:
         css="footer {visibility: hidden}"
     )
     advanced_checkbox = gr.Checkbox(label="Advanced options", value=False)
-    additional_settings_textbox = gr.Textbox(label="Additional Settings", visible=False)
+    # Advanced settings unlocked when you click 
+    additional_settings_textbox = gr.Textbox(label="Additional Settings", value="Debug A", visible=False)
 
     advanced_checkbox.change(fn=update_interface, inputs=advanced_checkbox, outputs=additional_settings_textbox)
 
