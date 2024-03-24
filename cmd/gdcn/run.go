@@ -22,8 +22,8 @@ func newRunCmd() *cobra.Command {
 	options := optionsfactory.NewJobCreatorOptions()
 	runCmd := &cobra.Command{
 		Use:     "run",
-		Short:   "Run a job on the Generic Decentralized Compute network.",
-		Long:    "Run a job on the Generic Decentralized Compute network.",
+		Short:   "Run a job on the Lilypad network.",
+		Long:    "Run a job on the Lilypad network.",
 		Example: "run cowsay:v0.0.1 -i Message=moo",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			options, err := optionsfactory.ProcessJobCreatorOptions(options, args)
@@ -42,9 +42,9 @@ func newRunCmd() *cobra.Command {
 func runJob(cmd *cobra.Command, options jobcreator.JobCreatorOptions) error {
 	c := color.New(color.FgCyan).Add(color.Bold)
 	c.Print(`
-Generic Decentralized Compute Network https://github.com/bacalhau-project/generic-dcn
+Lilypad https://github.com/bacalhau-project/generic-dcn
 `)
-	spinner, err := createSpinner("Generic Decentralized Compute Network submitting job", "🌟")
+	spinner, err := createSpinner("Lilypad submitting job", "🌟")
 	if err != nil {
 		fmt.Printf("failed to make spinner from config struct: %v\n", err)
 		os.Exit(1)
@@ -124,7 +124,7 @@ Generic Decentralized Compute Network https://github.com/bacalhau-project/generi
 		return err
 	}
 	spinner.Stop()
-	fmt.Printf("\n🍂 Generic Decentralized Compute Network job completed, try 👇\n    open %s\n    cat %s/stdout\n    cat %s/stderr\n    https://ipfs.io/ipfs/%s\n",
+	fmt.Printf("\n🍂 Lilypad job completed, try 👇\n    open %s\n    cat %s/stdout\n    cat %s/stderr\n    https://ipfs.io/ipfs/%s\n",
 		solver.GetDownloadsFilePath(result.JobOffer.DealID),
 		solver.GetDownloadsFilePath(result.JobOffer.DealID),
 		solver.GetDownloadsFilePath(result.JobOffer.DealID),
