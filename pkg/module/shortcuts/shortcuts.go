@@ -32,7 +32,7 @@ func GetModule(name string) (data.ModuleConfig, error) {
 		repo = fmt.Sprintf("https://%s", repo)
 	} else {
 		// lilypad std module
-		repo = fmt.Sprintf("https://github.com/bacalhau-project/lilypad-module-%s", repo)
+		repo = fmt.Sprintf("https://github.com/lilypad-tech/lilypad-module-%s", repo)
 	}
 
 	// TODO: docs for authoring a module
