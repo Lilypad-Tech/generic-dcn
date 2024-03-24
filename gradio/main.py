@@ -29,12 +29,13 @@ def run(module, inputs, request: gr.Request):
 
 
 def sdxl(prompt, request: gr.Request) -> Path:
-    results_dir = run("sdxl:v0.9-lilypad1", {"PromptEnv": f"PROMPT={prompt}"}, request)
+    results_dir = run("sdxl-sv3du:v0.9-sv3d-lilypad1", {"PromptEnv": f"PROMPT={prompt}"}, request)
     return Path(results_dir+"/outputs/image-42.png")
-
+    #results_dir = run("sdxl:v0.9-lilypad1", {"PromptEnv": f"PROMPT={prompt}"}, request)
+    # HACK
 
 def cowsay(message, request: gr.Request) -> str:
-    results_dir = run("cowsay:v0.0.1", {"Message": message}, request)
+    results_dir = run("cowsay:v0.0.3", {"Message": message}, request)
     return open(results_dir+"/stdout").read()
 
 
@@ -46,7 +47,7 @@ def mistral7b(message, history, request: gr.Request):
             inst_str += "\n"
     inst_str += f"[INST]{message}[/INST]"
     prompt = f"<s>{inst_str}"
-    results_dir = run("mistral-7b-instruct:v0.1-lilypad3", {"PromptEnv": f"PROMPT={prompt}"}, request)
+    results_dir = run("mistral-7b-instruct:v0.1-lilypad7", {"PromptEnv": f"PROMPT={prompt}"}, request)
     return open(results_dir+"/stdout").read().split("[START]")[1].split("[/INST]")[-1]
 
 # TODO: show the API call made to LilySaaS API in the UI, so users can see
