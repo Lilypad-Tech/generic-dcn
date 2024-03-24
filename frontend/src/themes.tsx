@@ -17,7 +17,7 @@ export interface ITheme {
 
 export const THEMES: Record<string, ITheme> = {
   gdcn: {
-    company: 'Generic Decentralized Compute Network',
+    company: 'Lilypad',
     url: 'https://github.com/bacalhau-project/generic-dcn',
     primary: '#14c7c3',
     secondary: '#fec284',
@@ -31,7 +31,7 @@ export const THEMES: Record<string, ITheme> = {
         <Box
           component="img"
           src="/img/logo.png"
-          alt="Generic Decentralized Compute Network" 
+          alt="Lilypad"
           sx={{
             height: 30,
             ml: 1,
@@ -41,7 +41,7 @@ export const THEMES: Record<string, ITheme> = {
           ml: 2,
           mr: 1,
         }}>
-          Generic Decentralized Compute Network AI Studio
+          Lilypad AI Studio
         </Typography>
       </Box>
     ),
