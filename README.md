@@ -1,10 +1,8 @@
-# generic decentralized compute network
+# Lilypad Decentralised Compute Network
 
-Generic DCN is a project that aims to facilitate the creation of a decentralized compute network.
+Lilypad Decentralised Compute Network (DCN) is a decentralized compute network that enables the execution of arbitrary Docker containers on a network of volunteer/incentivized nodes. It provides a platform where clients can pay a small amount of tokens to run jobs, such as Stable Diffusion XL tasks. The network utilizes EVM-based smart contracts to manage job state and payment, while leveraging [Bacalhau](https://www.bacalhau.org/) and [Docker](https://docker.com) for running jobs.
 
-It will use an EVM based blockchain to manage agreed job state and payment and use [bacalhau](https://www.bacalhau.org/) to manage the compute nodes.
-
-It attempts to bring various tools without a strong opinion on how they should be used together.  For example, it is possible to deploy the smart contracts on any EVM compatible blockchain and implement an interface to use any other tool than bacalhau to manage the compute nodes.
+Lilypad is a powerful, flexible and composable system that can be used to run a wide variety of compute tasks. It is designed to be a general-purpose compute network that can be used to run any kind of compute task, from simple scripts to complex machine learning models.
 
 ## table of contents
 
@@ -122,19 +120,19 @@ export BACALHAU_SERVE_IPFS_PATH=/tmp/gdcn/data/ipfs
 
 #### clone faucet repo
 
-The [faucet](https://github.com/bacalhau-project/eth-faucet) allows us to mint tokens for testing purposes.
+The [faucet](https://github.com/Lilypad-Tech/eth-faucet) allows us to mint tokens for testing purposes.
 
 We first need to clone the repo:
 
 ```bash
-# run this command at the same level as the generic-dcn repo
-git clone git@github.com:bacalhau-project/eth-faucet.git
+# run this command at the same level as the Lilypad repo
+git clone git@github.com:Lilypad-Tech/eth-faucet.git
 ```
 
 #### install stack
 
 ```bash
-cd generic-dcn
+cd lilypad-dcn
 ./stack install
 ```
 
@@ -223,7 +221,7 @@ Otherwise, if you don't have a GPU:
 
 ### run saas
 
-The generic-dcn repo also comes with a saas layer that can be used as a web2 layer to the underlying web3 stack.
+The lilypad-dcn repo also comes with a saas layer that can be used as a web2 layer to the underlying web3 stack.
 
 ![Saas](docs/images/saas.png)
 
@@ -318,19 +316,19 @@ Whenever you make changes to the smart contracts, regenerate the Go bindings in 
 
 ## production deployment
 
-Running the generic-dcn in a production environment will require:
+Running Lilypad DCN in a production environment will require:
 
  * an EVM compatible blockchain for which you have a private key with funds
    * you will use this `admin` private key to fund our various services
  * a VM (or multiple) connected to the Internet
    * the solver will require a public http(s) endpoint
    * it is recommended that you use a reverse proxy to terminate TLS and forward to the solver
- * a compiled binary of bacalhau `v1.0.3`
+ * a compiled binary of bacalhau `v1.2.3`
    * see the development instructions for how to get this onto the machine
    * it must live on the VM at the `/usr/bin/bacalhau` path
- * a compiled binary of the generic-dcn
+ * a compiled Lilypad binary
    * this can be compiled locally or in CI
-   * it must live on the VM at the `/usr/bin/generic-dcn` path
+   * it must live on the VM at the `/usr/bin/lilypad` path
  * docker running on the vm that will serve the faucet and saas platform
    * the faucet and saas will require a public http(s) endpoint
    * it is recommended that you use a reverse proxy to terminate TLS and forward to these services
@@ -421,9 +419,9 @@ We will be required to add some of these contract addresses to `.env` files late
 
 Now we need to create the `.env` files for each of our services.  Once created, we will upload these files to the vm(s) you are going to run the services on and then configure the systemd units to use them.
 
-The systemd units in the `systemd` folder all mention `/app/generic-dcn` as the location of their `.env` files, you are free to change the name of this folder (as long as you then upload the `.env` files you create to that folder).
+The systemd units in the `systemd` folder all mention `/app/lilypad` as the location of their `.env` files, you are free to change the name of this folder (as long as you then upload the `.env` files you create to that folder).
 
-We also need to have a data folder for `ipfs` - like above, the systemd units are configured to point at `/app/generic-dcn/ipfs` - you can change this folder but make sure to update the systemd units to what you created on the vm.
+We also need to have a data folder for `ipfs` - like above, the systemd units are configured to point at `/app/lilypad/ipfs` - you can change this folder but make sure to update the systemd units to what you created on the vm.
 
 The format of these files is classic env format as follows (using the solver as an example):
 
