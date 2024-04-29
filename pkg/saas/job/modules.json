@@ -23,4 +23,24 @@
   "title": "Mistral-7B-Instruct-v0.1",
   "cost": 6,
   "template": "text-to-text"
+}, {
+  "id": "sdxl-pipeline:v0.9-base-lilypad1",
+  "title": "SDXL Pipeline (Base 0.9)",
+  "cost": 6,
+  "template": "text-to-image"
+}, {
+  "id": "sdxl-pipeline:v0.9-refiner-lilypad1",
+  "title": "SDXL Pipeline (Refiner 0.9)",
+  "cost": 6,
+  "template": "text-to-image"
+}, {
+  "id": "sdxl-pipeline:v1.0-base-lilypad1",
+  "title": "SDXL Pipeline (Base 1.0)",
+  "cost": 6,
+  "template": "text-to-image"
+}, {
+  "id": "sdxl-pipeline:v1.0-refiner-lilypad1",
+  "title": "SDXL Pipeline (Refiner 1.0)",
+  "cost": 6,
+  "template": "text-to-image"
 }]

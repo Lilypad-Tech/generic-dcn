@@ -7,6 +7,8 @@ import time
 import os
 from pathlib import Path
 import random
+import json
+import requests
 
 app = FastAPI()
 
@@ -19,12 +21,19 @@ def toggle_advanced_options(advanced_options):
 def run(module, inputs, request: gr.Request):
     if not request.query_params.get("userApiToken", "").startswith("lp-"):
         raise Exception("Please log in / register")
-    res = requests.post("http://api/api/v1/jobs/sync", headers={
-        "Authorization": "Bearer "+request.query_params["userApiToken"]
-    }, json={
+    headers = {
+        "Authorization": "Bearer " + request.query_params["userApiToken"],
+        "Content-Type": "application/json"
+    }
+
+    data = {
         "module": module,
-        "inputs": inputs,
-    })
+        "inputs": inputs
+    }
+
+    print("curl -X POST -H", json.dumps(headers), "-d", json.dumps(data), "http://api/api/v1/jobs/sync")
+
+    res = requests.post("http://api/api/v1/jobs/sync", headers=headers, json=data)
     j = None
     try:
         j = res.json()
@@ -34,7 +43,7 @@ def run(module, inputs, request: gr.Request):
         return getTarball(j["result"]["deal_id"])
 
 
-def sdxl(prompt, model, size, request: gr.Request) -> Path:
+def sdxl(prompt, model, size, advanced_steps, advanced_sampler, advanced_scheduler, advanced_seeds, request: gr.Request) -> Path:
     size_map = {
         "512 x 512": "512",
         "768 x 768": "768",
@@ -47,7 +56,8 @@ def sdxl(prompt, model, size, request: gr.Request) -> Path:
         "SDXL Base 1.0": "sdxl-pipeline:v1.0-base-lilypad1",
         "SDXL Refiner 1.0": "sdxl-pipeline:v1.0-refiner-lilypad1",
     }
-    results_dir = run(model_map[model], {"Prompt": f"{prompt}", "Size": f"{size_map[size]}"}, request)
+    # Only specify values that are not default
+    results_dir = run(model_map[model], {"Prompt": "test"}, request)
     return Path(results_dir+"/outputs/image-42.png")
 
 def cowsay(message, request: gr.Request) -> str:
@@ -117,31 +127,35 @@ def sdxl_random_seed():
     return {advanced_seed: gr.Textbox(value=str(random.randint(1, 1000000)), visible=True)}
 
 with gr.Blocks() as sdxl_app:
-    prompt = gr.Textbox(lines=2, placeholder="Enter prompt for Stable Diffusion XL")
-    model = gr.Dropdown(["SDXL Base 0.9", "SDXL Refiner 0.9", "SDXL Base 1.0", "SDXL Refiner 1.0"], value="SDXL Base 1.0", label="Model", info="Select the specific model you want to use")
-    size = gr.Dropdown(["512 x 512", "768 x 768", "1024 x 1024", "1536 x 1536"], value="1024 x 1024", label="Size", info="Select the size of the image you want to generate")
-    advanced_checkbox = gr.Checkbox(label="Advanced options", value=False)
-    # Advanced settings unlocked when you click 
-    advanced_steps = gr.Slider(1, 200, label="Steps", visible=False)
-    advanced_sampler = gr.Dropdown([
-        "euler", "euler_ancestral", "heun", "heunpp2", "dpm_2", "dpm_2_ancestral"
-        "lms", "dpm_fast", "dpm_adaptive", "dpmpp_2s_ancestral", "dpmpp_sde",
-        "dpmpp_sde_gpu", "dpmpp_2m", "dpmpp_2m_sde", "dpmpp_2m_sde_gpu", "dpmpp_3m_sde",
-        "dpmpp_3m_sde_gpu", "ddpm", "lcm"], label="Sampler", visible=False)
-    advanced_scheduler = gr.Dropdown([
-        "normal", "karras", "exponential", "sgm_uniform", "simple", "ddim_uniform"
-    ], label="Scheduler", visible=False)
-    advanced_seed = gr.Textbox(label="Seed", visible=False)
-    # Update the form
-    advanced_checkbox.change(fn=toggle_advanced_options, inputs=advanced_checkbox, outputs=[advanced_steps, advanced_sampler, advanced_scheduler, advanced_seed])
-
     with gr.Row():
-        clear_btn = gr.Button("Clear", variant="secondary")
-        randomize_seed_btn = gr.Button("Randomize seed", variant="secondary")
-        submit_btn = gr.Button("Submit")
-        clear_btn.click(fn=sdxl_clear, outputs=[prompt, model, size, advanced_checkbox, advanced_steps])
-        randomize_seed_btn.click(fn=sdxl_random_seed, outputs=[advanced_seed])
-        submit_btn.click(fn=sdxl, inputs=[prompt, model, size, advanced_steps, advanced_sampler, advanced_scheduler, advanced_seed])
+        with gr.Column():
+            prompt = gr.Textbox(lines=2, placeholder="Enter prompt for Stable Diffusion XL")
+            model = gr.Dropdown(["SDXL Base 0.9", "SDXL Refiner 0.9", "SDXL Base 1.0", "SDXL Refiner 1.0"], value="SDXL Base 1.0", label="Model", info="Select the specific model you want to use")
+            size = gr.Dropdown(["512 x 512", "768 x 768", "1024 x 1024", "1536 x 1536"], value="1024 x 1024", label="Size", info="Select the size of the image you want to generate")
+            advanced_checkbox = gr.Checkbox(label="Advanced options", value=False)
+            # Advanced settings unlocked when you click 
+            advanced_steps = gr.Slider(1, 200, label="Steps", visible=False)
+            advanced_sampler = gr.Dropdown([
+                "euler", "euler_ancestral", "heun", "heunpp2", "dpm_2", "dpm_2_ancestral"
+                "lms", "dpm_fast", "dpm_adaptive", "dpmpp_2s_ancestral", "dpmpp_sde",
+                "dpmpp_sde_gpu", "dpmpp_2m", "dpmpp_2m_sde", "dpmpp_2m_sde_gpu", "dpmpp_3m_sde",
+                "dpmpp_3m_sde_gpu", "ddpm", "lcm"], label="Sampler", visible=False)
+            advanced_scheduler = gr.Dropdown([
+                "normal", "karras", "exponential", "sgm_uniform", "simple", "ddim_uniform"
+            ], label="Scheduler", visible=False)
+            advanced_seed = gr.Textbox(label="Seed", visible=False)
+            # Update the form
+            advanced_checkbox.change(fn=toggle_advanced_options, inputs=advanced_checkbox, outputs=[advanced_steps, advanced_sampler, advanced_scheduler, advanced_seed])
+
+            with gr.Row():
+                clear_btn = gr.Button("Clear", variant="secondary")
+                randomize_seed_btn = gr.Button("Randomize seed", variant="secondary")
+                submit_btn = gr.Button("Submit")
+                clear_btn.click(fn=sdxl_clear, outputs=[prompt, model, size, advanced_checkbox, advanced_steps])
+                randomize_seed_btn.click(fn=sdxl_random_seed, outputs=[advanced_seed])
+                submit_btn.click(fn=sdxl, inputs=[prompt, model, size, advanced_steps, advanced_sampler, advanced_scheduler, advanced_seed])
+        with gr.Column():
+            output_image = gr.Image(label="Generated image", interactive=False)
 
 # must match path nginx/noxy is proxying to (see docker-compose.yml)
 CUSTOM_PATH = "/gradio"
